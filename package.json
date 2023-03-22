@@ -1,0 +1,29 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "node.js app",
+  "main": "app.js",
+  "scripts": {
+    "lint": "npx eslint .",
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DeWhiteMold/express-mesto-gha.git"
+  },
+  "author": "Nikolai Smirnov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DeWhiteMold/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/DeWhiteMold/express-mesto-gha#readme",
+  "dependencies": {
+    "eslint": "^8.36.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "express": "^4.18.2",
+    "mongoose": "^7.0.2",
+    "nodemon": "^2.0.21"
+  }
+}
