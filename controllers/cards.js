@@ -44,12 +44,16 @@ module.exports.likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
+    .then((card) => {
+      if(card) {
+        res.send({ data: card })
+      } else {
+        res.status(404).send({ message: 'Карточка по указанному _id не найдена'});
+      } 
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name === 'CastError') {
-        res.status(404).send({ message: 'Карточка по указанному _id не найдена'});
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }

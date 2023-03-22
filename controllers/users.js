@@ -14,12 +14,17 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUser = (req, res) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError' || err.name === 'ValidationError') {
-        res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name === 'ValidationError') {
+    .then((user) => {
+      if(user){
+        res.send({ data: user })
+      } 
+      else {
         res.status(404).send({ message: 'Пользователь с указанным _id не найден'});
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
       }
@@ -46,11 +51,15 @@ module.exports.updateUser = (req, res) => {
     { name, about },
     { new: true }
   )
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+    .then((user) => {
+      if(req.body.isValid){
+        res.send({ data: user })
+      } else {
         res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name === 'CastError') {
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
         res.status(404).send({ message: 'Пользователь с указанным _id не найден'});
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
@@ -64,11 +73,15 @@ module.exports.updateAvatar = (req, res) => {
     { avatar },
     { new: true }
   )
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
+    .then((user) => {
+      if(req.body.isValid){
+        res.send({ data: user })
+      } else {
         res.status(400).send({ message: 'Переданы некорректные данные' });
-      } else if (err.name === 'CastError') {
+      }
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
         res.status(404).send({ message: 'Пользователь с указанным _id не найден'});
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
