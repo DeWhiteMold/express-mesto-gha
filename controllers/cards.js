@@ -45,14 +45,12 @@ module.exports.likeCard = (req, res) => {
     { new: true },
   )
     .then((card) => {
-      if(card) {
         res.send({ data: card })
-      } else {
-        res.status(404).send({ message: 'Карточка по указанному _id не найдена'});
-      } 
     })
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.name === 'CastError') {
+        res.status(404).send({ message: 'Пользователь с указанным _id не найден'});
+      } else if (err.name === 'ValidationError') {
         res.status(400).send({ message: 'Переданы некорректные данные' });
       } else {
         res.status(500).send({ message: 'Произошла ошибка' });
@@ -68,10 +66,10 @@ module.exports.dislikeCard = (req, res) => {
   )
   .then((card) => res.send({ data: card }))
   .catch((err) => {
-    if (err.name === 'ValidationError') {
+    if (err.name === 'CastError') {
+      res.status(404).send({ message: 'Пользователь с указанным _id не найден'});
+    } else if (err.name === 'ValidationError') {
       res.status(400).send({ message: 'Переданы некорректные данные' });
-    } else if (err.name === 'CastError') {
-      res.status(404).send({ message: 'Карточка по указанному _id не найдена'});
     } else {
       res.status(500).send({ message: 'Произошла ошибка' });
     }
