@@ -18,6 +18,6 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
-app.use('*', (req, res) => res.status(404));
+app.all('*', (req, res) => {throw res.status(404).send()});
 
 app.listen(PORT, console.log('ok'))
