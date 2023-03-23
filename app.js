@@ -18,6 +18,6 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
-app.all('*', (req, res) => {throw res.status(404).send()});
+app.all('*', (req, res) => {throw res.status(404).send({ message: 'no such URL'})});
 
 app.listen(PORT, console.log('ok'))
