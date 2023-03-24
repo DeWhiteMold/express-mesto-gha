@@ -1,6 +1,7 @@
 const express = require('express');
-const mongoose = require('mongoose')
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+
 const app = express();
 const { PORT = 3000 } = process.env;
 
@@ -18,6 +19,7 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
-app.all('*', (req, res) => {throw res.status(404).send({ message: 'no such URL'})});
 
-app.listen(PORT, console.log('ok'))
+app.all('*', (req, res) => { throw res.status(404).send({ message: 'no such URL' }); });
+
+app.listen(PORT, console.log('ok'));

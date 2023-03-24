@@ -1,4 +1,6 @@
-const mongoose = require('mongoose')
+/* eslint-disable import/no-extraneous-dependencies */
+const mongoose = require('mongoose');
+const validator = require('validator');
 
 const cardSchema = mongoose.Schema({
   name: {
@@ -10,6 +12,10 @@ const cardSchema = mongoose.Schema({
   link: {
     type: String,
     required: true,
+    validate: {
+      validator: (link) => validator.isURL(link),
+      message: 'Не является URL',
+    },
   },
   owner: {
     type: mongoose.ObjectId,
@@ -21,7 +27,7 @@ const cardSchema = mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now(),
-  }
-})
+  },
+});
 
-module.exports = mongoose.model('card', cardSchema)
+module.exports = mongoose.model('card', cardSchema);
