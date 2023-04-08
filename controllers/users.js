@@ -67,11 +67,11 @@ module.exports.createUser = (req, res, next) => {
         name, about, avatar, email, password: hash,
       });
     })
-    // .then(() => res.send({
-    //   data: {
-    //     name, about, avatar, email,
-    //   },
-    // }))
+    .then(() => res.send({
+      data: {
+        name, about, avatar, email,
+      },
+    }))
     .catch((err) => {
       if (err.code === 11000) {
         next(new AlreadyExist('Пользователь уже существует'));
