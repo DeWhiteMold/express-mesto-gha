@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { errors } = require('celebrate');
+const { errors, Joi, celebrate } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
 const NotFound = require('./errors/NotFound');
 require('dotenv').config();
@@ -14,8 +14,21 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
 
-app.post('/singup', createUser);
-app.post('/singin', login);
+app.post('/singup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().regex(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/),
+    email: Joi.string().required().email({ tlds: { allow: false } }),
+    password: Joi.string().required(),
+  }),
+}), createUser);
+app.post('/singin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email({ tlds: { allow: false } }),
+    password: Joi.string().required(),
+  }),
+}), login);
 
 app.use(require('./middlewares/auth'));
 
