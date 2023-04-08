@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
+const AlreadyExist = require('../errors/AlreadyExist');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -66,20 +67,15 @@ module.exports.createUser = (req, res, next) => {
         name, about, avatar, email, password: hash,
       });
     })
-    .then(() => res.send({
-      data: {
-        name, about, avatar, email,
-      },
-    }))
-    // .catch((err) => {
-    //   if (err.name === 'ValidationError') {
-    //     res.status(400).send({ message: 'Переданы некорректные данные' });
-    //   } else {
-    //     res.status(500).send({ message: 'На сервере произошла ошибка' });
-    //   }
-    // });
+    // .then(() => res.send({
+    //   data: {
+    //     name, about, avatar, email,
+    //   },
+    // }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
+      if (err.code === 11000) {
+        next(new AlreadyExist('Пользователь уже существует'));
+      } else if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
       } else {
         next(err);
