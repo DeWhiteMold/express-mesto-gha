@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
   }
 
   const token = extractBearerToken(authorization);
-  const { JWT_SECRET } = process.env;
+  const { JWT_SECRET = 'secret-key' } = process.env;
   let payload;
 
   try {
