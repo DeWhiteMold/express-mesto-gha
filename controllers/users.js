@@ -65,25 +65,25 @@ module.exports.createUser = (req, res, next) => {
     .then((hash) => {
       User.create({
         name, about, avatar, email, password: hash,
-      });
-    })
-    .then((user) => {
-      if (user) {
-        res.send({
-          data: {
-            name, about, avatar, email,
-          },
+      })
+        .then((user) => {
+          if (user) {
+            res.send({
+              data: {
+                name, about, avatar, email,
+              },
+            });
+          }
+        })
+        .catch((err) => {
+          if (err.code === 11000) {
+            next(new AlreadyExist('Пользователь уже существует'));
+          } else if (err.name === 'ValidationError') {
+            next(new BadRequest('Переданы некорректные данные'));
+          } else {
+            next(err);
+          }
         });
-      } else {
-        throw new AlreadyExist('Пользователь уже существует');
-      }
-    })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
     });
 };
 
