@@ -29,7 +29,7 @@ module.exports.getUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(BadRequest('Переданы некорректные данные'));
+        next(new BadRequest('Переданы некорректные данные'));
       } else {
         next(err);
       }
