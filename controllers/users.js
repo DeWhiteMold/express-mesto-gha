@@ -21,10 +21,10 @@ module.exports.getUsers = (req, res, next) => {
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
     .then((user) => {
-      if (user) {
-        res.send({ data: user });
-      } else {
+      if (!user) {
         throw new NotFound('Пользователь с указанным _id не найден');
+      } else {
+        res.send({ data: user });
       }
     })
     .catch((err) => {
