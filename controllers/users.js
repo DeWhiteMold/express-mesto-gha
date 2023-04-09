@@ -4,6 +4,7 @@ const User = require('../models/user');
 const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
 const AlreadyExist = require('../errors/AlreadyExist');
+const AuthError = require('../errors/AuthError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -142,11 +143,21 @@ module.exports.updateAvatar = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-  return User.findUserByCredentials(email, password)
+  User.findOne({ email }).select('+password')
     .then((user) => {
-      const { JWT_SECRET } = process.env;
-      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
-      res.send(token);
+      if (!user) {
+        throw new AuthError('Неправильный email или пароль');
+      }
+      bcrypt.compare(password, user.password, (err, isValidPassword) => {
+        if (!isValidPassword) {
+          throw new AuthError('Неправильный email или пароль');
+        }
+
+        const { JWT_SECRET } = process.env;
+        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+
+        return res.status(200).send({ token });
+      });
     })
     .catch(next);
 };
