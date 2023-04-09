@@ -6,13 +6,6 @@ const Forbidden = require('../errors/Forbidden');
 module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    // .catch((err) => {
-    //   if (err.name === 'ValidationError') {
-    //     res.status(400).send({ message: 'Переданы некорректные данные' });
-    //   } else {
-    //     res.status(500).send({ message: 'На сервере произошла ошибка' });
-    //   }
-    // });
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -27,13 +20,6 @@ module.exports.createCard = (req, res, next) => {
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => res.send({ data: card }))
-    // .catch((err) => {
-    //   if (err.name === 'ValidationError') {
-    //     res.status(400).send({ message: 'Переданы некорректные данные' });
-    //   } else {
-    //     res.status(500).send({ message: 'На сервере произошла ошибка' });
-    //   }
-    // });
     .catch((err) => {
       if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
@@ -47,10 +33,8 @@ module.exports.deleteCard = (req, res, next) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((card) => {
       if (!card) {
-        // res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
         throw new NotFound('Карточка с указанным _id не найдена');
       } else if (card.owner !== req.user._id) {
-        // res.send({ message: 'Вы не можете удалить эту карточку' });
         throw new Forbidden('Вы не можете удалить эту карточку');
       } else {
         res.send({ data: card });
@@ -73,7 +57,6 @@ module.exports.likeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        // res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
         throw new NotFound('Карточка с указанным _id не найдена');
       } else {
         res.send({ data: card });
@@ -96,7 +79,6 @@ module.exports.dislikeCard = (req, res, next) => {
   )
     .then((card) => {
       if (!card) {
-        // res.status(404).send({ message: 'Карточка с указанным _id не найдена' });
         throw new NotFound('Карточка с указанным _id не найдена');
       } else {
         res.send({ data: card });
