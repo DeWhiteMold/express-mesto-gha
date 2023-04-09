@@ -67,15 +67,19 @@ module.exports.createUser = (req, res, next) => {
         name, about, avatar, email, password: hash,
       });
     })
-    .then(() => res.send({
-      data: {
-        name, about, avatar, email,
-      },
-    }))
+    .then((user) => {
+      if (user) {
+        res.send({
+          data: {
+            name, about, avatar, email,
+          },
+        });
+      } else {
+        throw new AlreadyExist('Пользователь уже существует');
+      }
+    })
     .catch((err) => {
-      if (err.code === 11000) {
-        next(new AlreadyExist('Пользователь уже существует'));
-      } else if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
       } else {
         next(err);
