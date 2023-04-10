@@ -9,13 +9,7 @@ const AuthError = require('../errors/AuthError');
 module.exports.getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        next(new BadRequest('Переданы некорректные данные'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
 };
 
 module.exports.getUser = (req, res, next) => {
@@ -81,7 +75,8 @@ module.exports.createUser = (req, res, next) => {
             next(err);
           }
         });
-    });
+    })
+    .catch(next);
 };
 
 module.exports.updateUser = (req, res, next) => {
@@ -95,12 +90,14 @@ module.exports.updateUser = (req, res, next) => {
     },
   )
     .then((user) => {
-      res.send({ data: user });
+      if (!user) {
+        throw new NotFound('Пользователь с указанным _id не найден');
+      } else {
+        res.send({ data: user });
+      }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new NotFound('Пользователь с указанным _id не найден'));
-      } else if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
       } else {
         next(err);
@@ -118,12 +115,14 @@ module.exports.updateAvatar = (req, res, next) => {
     },
   )
     .then((user) => {
-      res.send({ data: user });
+      if (!user) {
+        throw new NotFound('Пользователь с указанным _id не найден');
+      } else {
+        res.send({ data: user });
+      }
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        next(new NotFound('Пользователь с указанным _id не найден'));
-      } else if (err.name === 'ValidationError') {
+      if (err.name === 'ValidationError') {
         next(new BadRequest('Переданы некорректные данные'));
       } else {
         next(err);
@@ -138,7 +137,7 @@ module.exports.login = (req, res, next) => {
       if (!user) {
         throw new AuthError('Неправильный email или пароль');
       }
-      bcrypt.compare(password, user.password, (err, isValidPassword) => {
+      return bcrypt.compare(password, user.password, (err, isValidPassword) => {
         if (!isValidPassword) {
           throw new AuthError('Неправильный email или пароль');
         }
