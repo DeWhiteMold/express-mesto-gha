@@ -133,20 +133,22 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findOne({ email }).select('+password')
-    .then(async (user) => {
+    .then((user) => {
       if (!user) {
         throw new AuthError('Неправильный email или пароль');
       }
-      await bcrypt.compare(password, user.password, (err, isValidPassword) => {
-        if (!isValidPassword) {
-          throw new AuthError('Неправильный email или пароль');
-        }
+      return bcrypt.compare(password, user.password)
+        .then((isValidPassword) => {
+          if (!isValidPassword) {
+            throw new AuthError('Неправильный email или пароль');
+          }
 
-        const { JWT_SECRET = 'secret-key' } = process.env;
-        const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
+          const { JWT_SECRET = 'secret-key' } = process.env;
+          const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
 
-        return res.status(200).send({ token });
-      });
+          return res.status(200).send({ token });
+        })
+        .catch(next);
     })
     .catch(next);
 };
