@@ -31,7 +31,7 @@ module.exports.deleteCard = (req, res, next) => {
       } else if (card.owner.toString() !== req.user._id) {
         throw new Forbidden('Вы не можете удалить эту карточку');
       } else {
-        Card.deleteOne()
+        card.deleteOne()
           .then(() => {
             res.status(200).send({ data: card });
           })

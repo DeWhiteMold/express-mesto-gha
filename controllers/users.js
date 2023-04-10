@@ -133,11 +133,11 @@ module.exports.updateAvatar = (req, res, next) => {
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findOne({ email }).select('+password')
-    .then((user) => {
+    .then(async (user) => {
       if (!user) {
         throw new AuthError('Неправильный email или пароль');
       }
-      return bcrypt.compare(password, user.password, (err, isValidPassword) => {
+      await bcrypt.compare(password, user.password, (err, isValidPassword) => {
         if (!isValidPassword) {
           throw new AuthError('Неправильный email или пароль');
         }
