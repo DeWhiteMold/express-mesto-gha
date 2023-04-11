@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const { errors, Joi, celebrate } = require('celebrate');
 const { createUser, login } = require('./controllers/users');
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const cors = require('./middlewares/cors');
 const NotFound = require('./errors/NotFound');
 require('dotenv').config();
 
@@ -13,6 +15,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose.connect('mongodb://localhost:27017/mestodb');
+
+app.use(requestLogger);
+
+app.use(cors);
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -36,6 +42,8 @@ app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
 
 app.all('*', (req, res, next) => { next(new NotFound('no such URL')); });
+
+app.use(errorLogger);
 
 app.use(errors());
 
